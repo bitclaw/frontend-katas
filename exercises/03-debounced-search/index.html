@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>03 — Debounced Search</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 40px auto; padding: 0 16px; }
+    input { width: 100%; padding: 8px; font-size: 16px; box-sizing: border-box; }
+    ul { list-style: none; padding: 0; margin-top: 12px; }
+    li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .status { font-size: 13px; color: #999; margin-top: 6px; min-height: 20px; }
+    .empty { color: #999; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h2>Debounced Search</h2>
+  <input type="text" id="search" placeholder="Type to search (fires after 300ms pause)..." />
+  <p class="status" id="status"></p>
+  <ul id="results"></ul>
+
+  <script>
+    const items = ["banana", "apple", "pineapple", "kiwi", "mango", "apricot", "grape"];
+    const searchInput = document.getElementById("search");
+    const resultsList = document.getElementById("results");
+    const status = document.getElementById("status");
+
+    let debounceTimer;
+
+    function render(filtered) {
+      if (filtered.length === 0) {
+        resultsList.innerHTML = `<li class="empty">No results found.</li>`;
+        return;
+      }
+      resultsList.innerHTML = filtered
+        .map(item => `<li>${item}</li>`)
+        .join("");
+    }
+
+    function search(query) {
+      console.log(`Searching for: "${query}"`); // would be a fetch() in real life
+      status.textContent = `Search fired for: "${query}"`;
+      const filtered = query
+        ? items.filter(item => item.toLowerCase().includes(query))
+        : items;
+      render(filtered);
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      status.textContent = "Waiting...";
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        search(e.target.value.toLowerCase().trim());
+      }, 300);
+    });
+
+    // Show all on load
+    render(items);
+  </script>
+</body>
+</html>

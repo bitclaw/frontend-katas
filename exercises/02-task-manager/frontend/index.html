@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>02 — Task Manager</title>
+  <style>
+    body { font-family: sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+    h2 { margin-bottom: 16px; }
+    .add-form { display: flex; gap: 8px; margin-bottom: 24px; }
+    .add-form input { flex: 1; padding: 8px; font-size: 15px; }
+    .add-form button { padding: 8px 16px; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; }
+    li.done span { text-decoration: line-through; color: #999; }
+    .loading { color: #999; font-style: italic; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Babel via CDN — no build step needed -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const API = "http://localhost:3000";
+
+    function App() {
+      const [tasks, setTasks]   = useState([]);
+      const [input, setInput]   = useState("");
+      const [loading, setLoading] = useState(true);
+      const [error, setError]   = useState(null);
+
+      // Fetch tasks on mount
+      useEffect(() => {
+        fetch(`${API}/tasks`)
+          .then(res => res.json())
+          .then(data => {
+            setTasks(data);
+            setLoading(false);
+          })
+          .catch(() => {
+            setError("Could not reach the API. Is the backend running?");
+            setLoading(false);
+          });
+      }, []);
+
+      async function addTask(e) {
+        e.preventDefault();
+        if (!input.trim()) return;
+
+        const res = await fetch(`${API}/tasks`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: input }),
+        });
+        const newTask = await res.json();
+        setTasks([...tasks, newTask]);
+        setInput("");
+      }
+
+      return (
+        <div>
+          <h2>Task Manager</h2>
+
+          <form className="add-form" onSubmit={addTask}>
+            <input
+              type="text"
+              placeholder="New task..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+            />
+            <button type="submit">Add</button>
+          </form>
+
+          {loading && <p className="loading">Loading tasks...</p>}
+          {error   && <p className="error">{error}</p>}
+
+          <ul>
+            {tasks.map(task => (
+              <li key={task.id} className={task.done ? "done" : ""}>
+                <span>{task.title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

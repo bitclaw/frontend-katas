@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>04 — Todo List</title>
+  <style>
+    body { font-family: sans-serif; max-width: 420px; margin: 40px auto; padding: 0 16px; }
+    form { display: flex; gap: 8px; margin-bottom: 16px; }
+    form input { flex: 1; padding: 8px; font-size: 15px; }
+    form button { padding: 8px 14px; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; }
+    li span { flex: 1; cursor: pointer; }
+    li.done span { text-decoration: line-through; color: #aaa; }
+    li button { background: none; border: none; color: #c00; cursor: pointer; font-size: 18px; }
+    .footer { margin-top: 12px; font-size: 13px; color: #888; }
+  </style>
+</head>
+<body>
+  <h2>Todo List</h2>
+
+  <form id="add-form">
+    <input type="text" id="task-input" placeholder="What needs to be done?" />
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="task-list"></ul>
+  <p class="footer" id="footer"></p>
+
+  <script>
+    let tasks = [
+      { id: 1, title: "Buy groceries", done: false },
+      { id: 2, title: "Walk the dog", done: true },
+    ];
+
+    const form      = document.getElementById("add-form");
+    const input     = document.getElementById("task-input");
+    const taskList  = document.getElementById("task-list");
+    const footer    = document.getElementById("footer");
+
+    function render() {
+      const remaining = tasks.filter(t => !t.done).length;
+      footer.textContent = `${remaining} task${remaining !== 1 ? "s" : ""} remaining`;
+
+      taskList.innerHTML = tasks.map(task => `
+        <li class="${task.done ? "done" : ""}" data-id="${task.id}">
+          <span class="title">${task.title}</span>
+          <button class="delete" title="Delete">✕</button>
+        </li>
+      `).join("");
+    }
+
+    // Toggle done on span click
+    taskList.addEventListener("click", (e) => {
+      const li = e.target.closest("li");
+      if (!li) return;
+      const id = Number(li.dataset.id);
+
+      if (e.target.classList.contains("delete")) {
+        tasks = tasks.filter(t => t.id !== id);
+      } else if (e.target.classList.contains("title")) {
+        tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+      }
+
+      render();
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = input.value.trim();
+      if (!title) return;
+      tasks.push({ id: Date.now(), title, done: false });
+      input.value = "";
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

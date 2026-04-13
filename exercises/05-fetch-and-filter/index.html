@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>05 — Fetch & Filter</title>
+  <style>
+    body { font-family: sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+    input { width: 100%; padding: 8px; font-size: 16px; box-sizing: border-box; margin-bottom: 16px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 10px 0; border-bottom: 1px solid #eee; }
+    li .name { font-weight: bold; }
+    li .email { font-size: 13px; color: #666; }
+    .status { color: #999; font-style: italic; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Fetch & Filter Users</h2>
+  <input type="text" id="search" placeholder="Filter by name..." disabled />
+  <div id="output"><p class="status">Loading...</p></div>
+
+  <script>
+    const API = "https://jsonplaceholder.typicode.com/users";
+    const searchInput = document.getElementById("search");
+    const output = document.getElementById("output");
+
+    let allUsers = [];
+
+    function render(users) {
+      if (users.length === 0) {
+        output.innerHTML = `<p class="status">No users found.</p>`;
+        return;
+      }
+      output.innerHTML = `<ul>${users.map(u => `
+        <li>
+          <div class="name">${u.name}</div>
+          <div class="email">${u.email}</div>
+        </li>
+      `).join("")}</ul>`;
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch(API);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        allUsers = await res.json();
+        searchInput.disabled = false;
+        searchInput.focus();
+        render(allUsers);
+      } catch (err) {
+        output.innerHTML = `<p class="error">Failed to load users: ${err.message}</p>`;
+      }
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = query
+        ? allUsers.filter(u => u.name.toLowerCase().includes(query))
+        : allUsers;
+      render(filtered);
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>

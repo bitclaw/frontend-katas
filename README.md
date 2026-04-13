@@ -11,6 +11,9 @@ Deliberate practice exercises for frontend interviews. Each kata is self-contain
 | 03 | [Debounced Search](./exercises/03-debounced-search/) | Vanilla JS | debounce, setTimeout, clearTimeout |
 | 04 | [Todo List](./exercises/04-todo-list/) | Vanilla JS | CRUD, DOM manipulation, state |
 | 05 | [Fetch & Filter](./exercises/05-fetch-and-filter/) | Vanilla JS | async/await, fetch, loading states |
+| 06 | [Binary Search](./exercises/06-binary-search/) | Vanilla JS | algorithm, low/high/mid, O(log n) |
+| 07 | [Abbreviate String](./exercises/07-abbreviate-string/) | Vanilla JS | string manipulation, split/map/join |
+| 08 | [Engagement Feed](./exercises/08-engagement-feed/) | Vanilla JS | filter chain, sort by date, relative timestamps |
 
 ---
 

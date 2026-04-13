@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>08 — Engagement Feed</title>
+  <style>
+    body { font-family: sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filters button {
+      padding: 6px 14px; border: 1px solid #ccc; background: #fff;
+      cursor: pointer; border-radius: 4px;
+    }
+    .filters button.active { background: #333; color: #fff; border-color: #333; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 12px 0; border-bottom: 1px solid #eee; }
+    .meta { font-size: 12px; color: #888; margin-top: 4px; }
+    .type {
+      display: inline-block; font-size: 11px; padding: 2px 7px;
+      border-radius: 10px; margin-right: 6px; font-weight: bold;
+    }
+    .comment { background: #e0f0ff; color: #0066cc; }
+    .like    { background: #fff0e0; color: #cc6600; }
+    .share   { background: #e0ffe0; color: #006600; }
+    .empty   { color: #999; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h2>Engagement Feed</h2>
+
+  <div class="filters" id="filters">
+    <button class="active" data-type="all">All</button>
+    <button data-type="comment">Comments</button>
+    <button data-type="like">Likes</button>
+    <button data-type="share">Shares</button>
+  </div>
+
+  <ul id="feed"></ul>
+
+  <script>
+    const now = new Date();
+    const hoursAgo = h => new Date(now - h * 3600 * 1000).toISOString();
+    const daysAgo  = d => new Date(now - d * 86400 * 1000).toISOString();
+
+    const events = [
+      { id: 1, memberId: 101, type: "comment", title: "Great article!", occurredAt: hoursAgo(1),  published: true  },
+      { id: 2, memberId: 102, type: "like",    title: "Liked your post", occurredAt: hoursAgo(3),  published: true  },
+      { id: 3, memberId: 103, type: "share",   title: "Shared to timeline", occurredAt: hoursAgo(5), published: false },
+      { id: 4, memberId: 104, type: "comment", title: "I disagree with point 3", occurredAt: daysAgo(1),  published: true  },
+      { id: 5, memberId: 105, type: "share",   title: "Shared to group", occurredAt: daysAgo(2),  published: true  },
+      { id: 6, memberId: 106, type: "like",    title: "Liked your comment", occurredAt: daysAgo(3),  published: false },
+      { id: 7, memberId: 107, type: "comment", title: "Thanks for sharing!", occurredAt: daysAgo(5),  published: true  },
+      { id: 8, memberId: 108, type: "like",    title: "Liked your reply", occurredAt: hoursAgo(2),  published: true  },
+    ];
+
+    function timeAgo(isoString) {
+      const diff = Math.floor((now - new Date(isoString)) / 1000); // seconds
+      if (diff < 3600)  return `${Math.floor(diff / 60)} minutes ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+      return `${Math.floor(diff / 86400)} days ago`;
+    }
+
+    function getFiltered(type) {
+      return events
+        .filter(e => e.published)
+        .filter(e => type === "all" || e.type === type)
+        .sort((a, b) => new Date(b.occurredAt) - new Date(a.occurredAt));
+    }
+
+    function render(type) {
+      const feed = document.getElementById("feed");
+      const filtered = getFiltered(type);
+
+      if (filtered.length === 0) {
+        feed.innerHTML = `<li class="empty">No events found.</li>`;
+        return;
+      }
+
+      feed.innerHTML = filtered.map(e => `
+        <li>
+          <span class="type ${e.type}">${e.type}</span>
+          ${e.title}
+          <div class="meta">Member #${e.memberId} · ${timeAgo(e.occurredAt)}</div>
+        </li>
+      `).join("");
+    }
+
+    // Filter button clicks
+    document.getElementById("filters").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+
+      document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      render(btn.dataset.type);
+    });
+
+    render("all");
+  </script>
+</body>
+</html>

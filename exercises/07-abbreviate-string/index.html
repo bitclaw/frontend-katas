@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>07 — Abbreviate String</title>
+  <style>
+    body { font-family: monospace; max-width: 580px; margin: 40px auto; padding: 0 16px; }
+    h2 { font-family: sans-serif; }
+    .test { padding: 6px 0; border-bottom: 1px solid #eee; }
+    .label { color: #555; font-size: 13px; }
+    .result { margin-top: 2px; }
+    .pass { color: green; }
+    .fail { color: red; }
+    textarea {
+      width: 100%; height: 160px; font-family: monospace;
+      font-size: 14px; margin-top: 12px; box-sizing: border-box;
+    }
+    button { margin-top: 8px; padding: 8px 16px; cursor: pointer; font-size: 14px; }
+    #results { margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Abbreviate String</h2>
+  <p>Edit the function below and click Run to test it.</p>
+
+  <textarea id="code">
+function abbreviate(text, minLength = 10) {
+  return text
+    .split(" ")
+    .map(word => {
+      if (word.length <= minLength) return word;
+      const first  = word[0];
+      const last   = word[word.length - 1];
+      const middle = word.length - 2;
+      return `${first}${middle}${last}`;
+    })
+    .join(" ");
+}
+  </textarea>
+
+  <button onclick="runTests()">Run Tests</button>
+  <div id="results"></div>
+
+  <script>
+    const testCases = [
+      {
+        args: ["The internationalization of our application is a complex task"],
+        expected: "The i18n of our a9n is a complex task",
+        label: `abbreviate("The internationalization of our application is a complex task")`,
+      },
+      {
+        args: ["hello world"],
+        expected: "hello world",
+        label: `abbreviate("hello world") → unchanged (both under 10)`,
+      },
+      {
+        args: ["accessibility", 5],
+        expected: "a11y",  // a + 11 + y = accessibility is 13 chars, 13-2=11
+        label: `abbreviate("accessibility", 5) → "a11y"`,
+      },
+      {
+        args: ["", 10],
+        expected: "",
+        label: `abbreviate("") → "" (empty string)`,
+      },
+      {
+        args: ["short"],
+        expected: "short",
+        label: `abbreviate("short") → "short" (under threshold)`,
+      },
+    ];
+
+    function runTests() {
+      const code = document.getElementById("code").value;
+      const results = document.getElementById("results");
+
+      let fn;
+      try {
+        fn = new Function(`${code}; return abbreviate;`)();
+      } catch (e) {
+        results.innerHTML = `<p style="color:red">Syntax error: ${e.message}</p>`;
+        return;
+      }
+
+      const html = testCases.map(({ args, expected, label }) => {
+        const actual = fn(...args);
+        const pass = actual === expected;
+        return `<div class="test">
+          <div class="label">${label}</div>
+          <div class="result ${pass ? "pass" : "fail"}">
+            ${pass ? "PASS" : `FAIL — expected "${expected}", got "${actual}"`}
+          </div>
+        </div>`;
+      }).join("");
+
+      results.innerHTML = html;
+    }
+
+    runTests();
+  </script>
+</body>
+</html>

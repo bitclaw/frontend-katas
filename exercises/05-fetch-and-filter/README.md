@@ -2,7 +2,8 @@
 
 ## Problem
 
-Fetch a list of users from a public API, display them, and let the user filter by name in real time. Show a loading state while the data is being fetched and handle errors gracefully.
+Fetch a list of users from a public API, display them, and let the user filter by name in real time. Show a loading
+state while the data is being fetched and handle errors gracefully.
 
 Uses: `https://jsonplaceholder.typicode.com/users`
 

@@ -2,7 +2,8 @@
 
 ## Problem
 
-Given a predefined list of strings, filter and display results in real time as the user types. Matching should be case-insensitive and substring-based (not just prefix).
+Given a predefined list of strings, filter and display results in real time as the user types. Matching should be
+case-insensitive and substring-based (not just prefix).
 
 **Example:**
 ```

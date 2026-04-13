@@ -2,7 +2,8 @@
 
 ## Problem
 
-Same as exercise 01, but now the filtering only runs **300ms after the user stops typing**. This simulates a real-world search that hits an API instead of a local array — you don't want to fire a request on every single keystroke.
+Same as exercise 01, but now the filtering only runs **300ms after the user stops typing**. This simulates a real-world
+search that hits an API instead of a local array — you don't want to fire a request on every single keystroke.
 
 ## What to focus on
 - `setTimeout` / `clearTimeout` pattern
